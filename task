@@ -1,0 +1,202 @@
+Добрый день. Спасибо за отклик. Вы прошли предварительный отбор. Следующий этап представляет собой выполнение тестового задания. Просим вас выполнить тестовое задание.
+
+Так мы поймем что у вас есть технические знания и опыт.
+
+
+Тестовое задание: Каталог задач
+
+Реализуйте REST-сервис для управления задачами.
+Используйте Kotlin, Spring Boot, Reactor, JdbcClient и native SQL.
+Архитектура должна включать Controller, Service и Repository.
+Обязательно добавьте unit-тесты для сервиса и контроллера.
+Базовые операции: создание, получение, обновление статуса, удаление, список с пагинацией и фильтрацией.
+
+Описание
+Необходимо разработать backend-сервис для управления задачами в системе.
+Сервис должен позволять:
+· создавать задачи,
+· получать список задач,
+· получать задачу по id,
+· обновлять статус задачи,
+· удалять задачу.
+Архитектура приложения должна быть разделена на слои:
+· Controller
+· Service
+· Repository
+Для доступа к данным использовать Spring JDBC JdbcClient и native SQL-запросы.
+Для асинхронной/реактивной обработки использовать Project Reactor (Mono, Flux).
+Функциональные требования
+1. Сущность Task
+Поля:
+· id: Long
+· title: String
+· description: String?
+· status: TaskStatus
+· createdAt: LocalDateTime
+· updatedAt: LocalDateTime
+2. Enum TaskStatus
+Возможные значения:
+· NEW
+· IN_PROGRESS
+· DONE
+· CANCELLED
+
+API
+Создать задачу
+POST /api/tasks
+Request
+{
+"title": "Prepare report",
+"description": "Monthly financial report"
+}
+Response
+{
+"id": 1,
+"title": "Prepare report",
+"description": "Monthly financial report",
+"status": "NEW",
+"createdAt": "2026-03-26T12:00:00",
+"updatedAt": "2026-03-26T12:00:00"
+}
+
+Получить список задач
+GET /api/tasks?page=0&size=10&status=NEW
+Требования:
+· параметры page и size обязательны
+· фильтр status — опциональный
+· сортировка по createdAt DESC
+Response
+{
+"content": [
+{
+"id": 1,
+"title": "Prepare report",
+"description": "Monthly financial report",
+"status": "NEW",
+"createdAt": "2026-03-26T12:00:00",
+"updatedAt": "2026-03-26T12:00:00"
+}
+],
+"page": 0,
+"size": 10,
+"totalElements": 1,
+"totalPages": 1
+}
+
+Получить задачу по id
+GET /api/tasks/{id}
+Ошибки:
+· если задача не найдена — вернуть 404 Not Found
+
+Обновить статус задачи
+PATCH /api/tasks/{id}/status
+Request
+{
+"status": "DONE"
+}
+Правила:
+· разрешено менять только status
+· при обновлении должно изменяться updatedAt
+
+Удалить задачу
+DELETE /api/tasks/{id}
+Ответ:
+· 204 No Content
+
+Технические требования
+Стек
+· Kotlin
+· Spring Boot
+· Spring WebFlux или Web MVC с Reactor-типами в сервисном слое
+· JdbcClient
+· PostgreSQL или H2
+· Flyway/Liquibase для миграций
+Слой Repository
+Repository должен:
+· использовать JdbcClient
+· содержать native SQL
+· не использовать ORM/JPA
+· реализовать операции CRUD
+Пример ожидаемых методов:
+· save(task)
+· findById(id)
+· findAll(page, size, status)
+· updateStatus(id, status)
+· deleteById(id)
+
+Требования к Reactor
+В сервисном слое все методы должны возвращать:
+· Mono<Task>
+· Flux<Task>
+· либо DTO-обертки на их основе
+Например:
+· fun createTask(request): Mono<TaskResponse>
+· fun getTaskById(id): Mono<TaskResponse>
+· fun getTasks(...): Mono<PageResponse<TaskResponse>>
+· fun updateStatus(...): Mono<TaskResponse>
+· fun deleteTask(id): Mono<Void>
+
+Требования к Unit Test
+Обязательно покрыть тестами:
+Service
+· успешное создание задачи
+· получение задачи по id
+· ошибка при отсутствии задачи
+· обновление статуса
+· удаление задачи
+· получение списка задач с фильтрацией и пагинацией
+Controller
+· корректные HTTP-статусы
+· валидация входных данных
+· 404 для отсутствующей задачи
+Repository
+Если хочется упростить, repository можно покрыть интеграционными тестами, но если задание именно на Unit Test — желательно:
+· замокать JdbcClient
+· проверить формирование SQL-вызовов и маппинг результатов
+
+Дополнительные требования
+· Использовать DTO для запросов и ответов
+· Добавить валидацию:
+o title не пустой
+o длина title — от 3 до 100 символов
+· Ошибки обрабатывать централизованно через @RestControllerAdvice
+· Код должен быть читаемым и разделённым по пакетам
+
+Пример структуры проекта
+src/main/kotlin
+├── controller
+├── service
+├── repository
+├── model
+├── dto
+├── exception
+└── config
+
+Что считается плюсом
+· аккуратная обработка ошибок
+· понятные названия методов
+· тесты с хорошим покрытием
+· использование Mono/Flux без блокировок в сервисном слое
+· пагинация через native SQL
+· аккуратный маппинг Row -> Entity/DTO
+
+Критерии оценки
+Базовый уровень
+· приложение запускается
+· все основные эндпоинты работают
+· есть service/repository/controller слои
+· используются JdbcClient и native SQL
+· есть unit tests
+Средний уровень
+· корректная реактивная модель через Reactor
+· валидация и обработка ошибок
+· удобные DTO
+· тесты покрывают основные сценарии
+Сильный уровень
+· хорошая архитектура
+· чистый код
+· качественные тесты
+· правильная обработка edge cases
+· понятная документация по запуску
+Важно:
+По итогам выполнения задания необходимо предоставить исходник в открытом доступе через github. По итогам выполнения ТЗ, результат загрузите в анкету https://docs.google.com/forms/d/1psrX6J7z9kGZIiykzL4i5spRvvuqkkeFXjKzmcp4EX4/edit

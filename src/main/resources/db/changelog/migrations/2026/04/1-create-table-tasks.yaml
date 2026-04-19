@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id:  'create-table-tasks'
+      author:  dksuleimanov
+      changes:
+        - createTable:
+            tableName:  tasks
+            columns:
+              - column:
+                  name:  id
+                  type:  bigint
+                  autoIncrement:  true
+                  constraints:
+                    primaryKey:  true
+                    nullable:  false
+              - column:
+                  name:  title
+                  type:  varchar(100)
+                  constraints:
+                    nullable:  false
+              - column:
+                  name:  description
+                  type:  text
+              - column:
+                  name:  status
+                  type:  varchar(30)
+              - column:
+                  name:  created_at
+                  type:  timestamp
+              - column:
+                  name: updated_at
+                  type: timestamp

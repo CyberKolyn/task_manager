@@ -1,0 +1,13 @@
+package com.example.task_test_work.dto.task
+
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
+
+data class TaskRequest(
+
+    @field:NotBlank
+    @field:Size(min = 3, max = 100)
+    val title: String = "",
+
+    val description: String? = null
+)
