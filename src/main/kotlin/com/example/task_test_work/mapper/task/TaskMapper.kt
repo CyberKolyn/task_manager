@@ -5,7 +5,7 @@ import com.example.task_test_work.dto.task.TaskResponse
 import com.example.task_test_work.model.task.Task
 
 fun TaskRequest.toModal() = Task(
-    title = title!!,
+    title = title,
     description = description
 )
 
